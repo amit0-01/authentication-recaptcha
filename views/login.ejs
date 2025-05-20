@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html><body>
+  <h1>Login</h1>
+  <form id="login-form" action="/login" method="post">
+    <input name="username" placeholder="Username or Email" required><br>
+    <input name="password" type="password" placeholder="Password" required><br>
+    <input type="hidden" name="token" id="token">
+    <div class="g-recaptcha" data-sitekey="6Le44kErAAAAALCozy1R8RTjw_Onn2PKsQ2jAmRj" data-callback="onCaptcha"></div>
+    <button type="submit">Login</button>
+  </form>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script>
+    function onCaptcha(token) {
+      document.getElementById('token').value = token;
+      document.getElementById('login-form').submit();
+    }
+  </script>
+</body></html>

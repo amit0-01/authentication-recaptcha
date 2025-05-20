@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html><body>
+  <h1>Welcome, <%= user.username %></h1>
+  <p>Email: <%= user.email %></p>
+  <p>Member since: <%= user.created_at %></p>
+  <form action="/logout" method="get"><button type="submit">Logout</button></form>
+</body></html>
