@@ -1,18 +1,60 @@
 <!DOCTYPE html>
-<html><body>
-  <h1>Login</h1>
-  <form id="login-form" action="/login" method="post">
-    <input name="username" placeholder="Username or Email" required><br>
-    <input name="password" type="password" placeholder="Password" required><br>
-    <input type="hidden" name="token" id="token">
-    <div class="g-recaptcha" data-sitekey="6Le44kErAAAAALCozy1R8RTjw_Onn2PKsQ2jAmRj" data-callback="onCaptcha"></div>
-    <button type="submit">Login</button>
-  </form>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <script src="https://www.google.com/recaptcha/api.js?render=6Lf8oEMrAAAAADTZiffhYLc8j_hUy4vsvWZqkVKM"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-100 flex items-center justify-center">
+
+  <div class="bg-white shadow-lg rounded-xl w-full max-w-sm p-6">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
+
+    
+    <form id="login-form" action="/login" method="POST" class="space-y-4">
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700">Username or Email</label>
+        <input name="username" id="username" required
+               class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" name="password" id="password" required
+               class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+      </div>
+
+      <input type="hidden" name="token" id="token" />
+
+      <button type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md transition">
+        Login
+      </button>
+    </form>
+
+    <p class="mt-4 text-sm text-gray-500 text-center">Protected by Google reCAPTCHA</p>
+
+    <button 
+    type="button" 
+    onclick="window.location.href='/register'" 
+    class="w-full mt-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-md transition"
+  >
+    Register
+  </button>
+  </div>
+
   <script>
-    function onCaptcha(token) {
-      document.getElementById('token').value = token;
-      document.getElementById('login-form').submit();
-    }
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      grecaptcha.ready(function () {
+        grecaptcha.execute('6Lf8oEMrAAAAADTZiffhYLc8j_hUy4vsvWZqkVKM', {action: 'login'}).then(function (token) {
+          document.getElementById('token').value = token;
+          e.target.submit();
+        });
+      });
+    });
   </script>
-</body></html>
+</body>
+</html>
