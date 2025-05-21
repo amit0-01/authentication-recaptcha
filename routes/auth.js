@@ -4,6 +4,17 @@ const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const pool = require('../db');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
+
+
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, 
+    max: 5, 
+    message: 'Too many login attempts from this IP, please try again after 15 minutes',
+    standardHeaders: true, 
+    legacyHeaders: false,  
+  });
+
 
 router.get('/register', (req, res) => res.render('register'));
 router.post('/register', async (req, res) => {
@@ -30,7 +41,7 @@ router.post('/register', async (req, res) => {
 
 router.get('/login', (req, res) => res.render('login'));
 
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
     const { username, password, token } = req.body;
   
     try {
@@ -82,6 +93,7 @@ router.post('/login', async (req, res) => {
       res.render('login', { errorMessage: 'Internal Server Error' });
     }
   });
+  
   
 
 router.get('/profile', async (req, res) => {
