@@ -5,6 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profile</title>
   <script src="https://cdn.tailwindcss.com"></script>
+<script>
+  const token = "<%= token %>";
+  
+  function parseJwt(token) {
+    try {
+      const base64Payload = token.split('.')[1];
+      const payload = atob(base64Payload);
+      return JSON.parse(payload);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  const payload = parseJwt(token);
+
+  if (payload && payload.exp) {
+    const expTime = payload.exp * 1000;
+    const warnTime = expTime - 30000;
+
+    const now = Date.now();
+    const timeUntilWarn = warnTime - now;
+
+    if (timeUntilWarn > 0) {
+      setTimeout(() => {
+        alert('⚠️ Your session is about to expire in 30 seconds.');
+      }, timeUntilWarn);
+    }
+
+    const timeUntilLogout = expTime - now;
+    if (timeUntilLogout > 0) {
+      setTimeout(() => {
+        alert('🚪 Session expired. Redirecting to login.');
+        window.location.href = '/login?error=expired';
+      }, timeUntilLogout);
+    }
+  }
+</script>
+
 </head>
 <body class="min-h-screen bg-gray-100 flex items-center justify-center">
 

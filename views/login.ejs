@@ -12,6 +12,11 @@
   <div class="bg-white shadow-lg rounded-xl w-full max-w-sm p-6">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Login</h2>
 
+    <% if (errorMessage) { %>
+      <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm text-center">
+        <%= errorMessage %>
+      </div>
+    <% } %>
     
     <form id="login-form" action="/login" method="POST" class="space-y-4">
       <div>

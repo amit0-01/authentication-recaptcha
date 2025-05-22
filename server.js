@@ -16,9 +16,9 @@ app.use(cookieParser());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-// app.get('/', (req, res) => {
-//     res.redirect('/login');  
-//   });
+app.get('/', (req, res) => {
+    res.redirect('/login');  
+  });
   
 app.use('/', authRoutes);
 

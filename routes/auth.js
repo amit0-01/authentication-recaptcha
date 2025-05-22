@@ -15,7 +15,7 @@ const loginLimiter = rateLimit({
     legacyHeaders: false,  
   });
 
-
+// REGISTER
 router.get('/register', (req, res) => res.render('register'));
 router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
@@ -39,13 +39,23 @@ router.post('/register', async (req, res) => {
     res.send('Registration successful. Please <a href="/login">log in</a>.');
 });
 
-router.get('/login', (req, res) => res.render('login'));
+
+// LOGIN
+router.get('/login', (req, res) => {
+  const errorMap = {
+    expired: 'Session expired. Please log in again.',
+    invalid: 'Invalid session token.',
+    notoken: 'Please log in first.',
+  };
+
+  const errorMessage = errorMap[req.query.error] || null;
+  res.render('login', { errorMessage, successMessage: null });
+});
 
 router.post('/login', loginLimiter, async (req, res) => {
     const { username, password, token } = req.body;
   
     try {
-      // Verify reCAPTCHA
       const captchaRes = await axios.post(
         `https://www.google.com/recaptcha/api/siteverify`,
         new URLSearchParams({
@@ -60,7 +70,6 @@ router.post('/login', loginLimiter, async (req, res) => {
         return res.render('login', { errorMessage: 'Failed reCAPTCHA verification.' });
       }
   
-      // Lookup user
       const userRes = await pool.query(
         'SELECT * FROM users WHERE username=$1 OR email=$1',
         [username]
@@ -69,11 +78,9 @@ router.post('/login', loginLimiter, async (req, res) => {
       const user = userRes.rows[0];
       if (!user) return res.render('login', { errorMessage: 'User not found.' });
   
-      // Check password
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) return res.render('login', { errorMessage: 'Incorrect password.' });
   
-      // Sign JWT and send cookie
       const jwtToken = jwt.sign(
         { id: user.id, username: user.username, email: user.email },
         process.env.JWT_SECRET,
@@ -86,7 +93,7 @@ router.post('/login', loginLimiter, async (req, res) => {
         secure: process.env.NODE_ENV === 'production',
       });
   
-      res.redirect('/profile');
+      res.render('profile', { user, token: jwtToken });
   
     } catch (err) {
       console.error('Login error:', err.message);
@@ -95,7 +102,7 @@ router.post('/login', loginLimiter, async (req, res) => {
   });
   
   
-
+// PROFILE 
 router.get('/profile', async (req, res) => {
     const token = req.cookies.token;
     if (!token) return res.redirect('/login?error=notoken');
@@ -108,6 +115,9 @@ router.get('/profile', async (req, res) => {
         res.redirect('/login?error=expired');
     }
 });
+
+
+// LOGOUT
 
 router.get('/logout', (req, res) => {
     res.clearCookie('token');
