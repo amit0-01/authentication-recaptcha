@@ -1,9 +1,6 @@
 const express = require('express');
-const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-const path = require('path');
 const authRoutes = require('./routes/auth.js');
 
 dotenv.config();
